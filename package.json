@@ -1,0 +1,12 @@
+{
+  "name": "nodejs-encyclopedia-project",
+  "version": "1.0.0",
+  "description": "This is the back-end for my encyclopedia project.",
+  "main": "server.js",
+  "scripts": {
+	"start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Negoiu Paul | thisisnothappening",
+  "license": "ISC"
+}
