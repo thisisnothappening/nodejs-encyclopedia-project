@@ -4,9 +4,14 @@
   "description": "This is the back-end for my encyclopedia project.",
   "main": "server.js",
   "scripts": {
-	"start": "nodemon server.js",
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Negoiu Paul | thisisnothappening",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "sequelize": "^6.28.0"
+  }
 }
