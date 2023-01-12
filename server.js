@@ -11,58 +11,50 @@ db.authenticate()
 app.use(express.json());
 app.use(cors());
 
-app.get("/articles", (req, res) => {
-	Article.findAll()
+app.get("/articles", async (req, res) => {
+	await Article.findAll()
 		.then(articles => res.send(articles))
 		.catch(err => console.log(err));
 });
 
 app.post("/articles", async (req, res) => {
+	// category is category.name
 	let { name, category, picture, text } = req.body;
-	let errors = [];
-
-	if (!name) {
-		errors.push({ text: "Please add a name" });
-	}
-	if (!category) {
-		errors.push({ text: "Please add a category name" });
-	}
-	if (!picture) {
-		errors.push({ text: "Please add a picture URL" });
-	}
-	if (!text) {
-		errors.push({ text: "Please add a text" });
+	try {
+		if (!name || name.trim().length === 0 ||
+			!category || category.trim().length === 0 ||
+			!picture || picture.trim().length === 0 ||
+			!text || text.trim().length === 0) {
+			throw new Error("Field cannot be null");
+		}
+	} catch (err) {
+		console.log(err);
+		return res.status(400).send(err.message);
 	}
 
-	if (errors.length > 0) {
-		res.send(
-			errors
-		);
-		return;
-	}
-
-	let category1 = await Category.findOrCreate({
+	await Category.findOrCreate({
 		where: { name: category },
 		defaults: {
 			name: category
 		}
-	});
+	})
+		.catch(err => console.log(err));
+
+	let categoryObject = await Category.findOne({ where: { name: category } })
+		.catch(err => console.log(err));
 
 	await Article.create({
 		name: name,
-		category_id: category1._id,
+		categoryId: categoryObject.id,
 		picture: picture,
 		text: text,
-		// category: category1
-	}, {
-		// include: [ Category ]
 	})
 		.then(article => res.send(article))
 		.catch(err => console.log(err));
 });
 
-app.get("/categories", (req, res) => {
-	Category.findAll()
+app.get("/categories", async (req, res) => {
+	await Category.findAll()
 		.then(categories => res.send(categories))
 		.catch(err => console.log(err));
 });

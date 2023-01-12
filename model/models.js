@@ -10,26 +10,24 @@ const ArticleSequelize = db.define("article", {
 	},
 	name: {
 		type: Sequelize.STRING,
-		// allowNull: false,
+		allowNull: false,
 	},
-	category_id: {
+	categoryId: {
 		type: Sequelize.INTEGER,
 		allowNull: false,
-		defaultValue: null,
-		foreignKey: true,
-		unique: true,
 		refernces: {
-			model: "CategorySequelize",
+			model: "category", // not sure about this
 			key: "id"
 		},
+		field: "category_id",
 	},
 	picture: {
 		type: Sequelize.TEXT,
-		// allowNull: false,
+		allowNull: false,
 	},
 	text: {
 		type: Sequelize.TEXT,
-		// allowNull: false,
+		allowNull: false,
 	},
 }, {
 	freezeTableName: true,
@@ -45,7 +43,7 @@ const CategorySequelize = db.define("category", {
 	},
 	name: {
 		type: Sequelize.STRING,
-		// allowNull: false,
+		allowNull: false,
 	},
 }, {
 	freezeTableName: true,
@@ -57,11 +55,8 @@ class Article extends ArticleSequelize {
 		return Article.findOne({ where: { name: name } });
 	};
 	setCategory(category) {
-		this.category_id = category._id;
+		this.categoryId = category.id;
 	};
-	// setCategoryId(_category_id) {
-	// 	this.category_id = _category_id;
-	// };
 };
 
 class Category extends CategorySequelize {
@@ -75,29 +70,29 @@ class Category extends CategorySequelize {
 		return Category.findOne({ where: { name: name } });
 	};
 	static existsByName(name) {
-		if (Category.findByName(name).length() > 0) {
+		if (Category.findByName(name) !== null) {
 			return true;
 		}
 		return false;
 	};
-	get _id() {
+	get id() {
 		return this.id;
 	};
-	get _name() {
+	get name() {
 		return this.name;
 	}
 };
 
-// Category.Article = Category.hasMany(Article, { foreignKey: "article_id" }); // this one throws error (bcuz there's no article_id in category)
+Category.Article = Category.hasMany(Article, {
+	foreignKey: "categoryId" // not sure about this
+});
 Article.Category = Article.belongsTo(Category, {
-	foreignKey: "category_id",
+	foreignKey: "categoryId",
 	onUpdate: "CASCADE",
 	onDelete: "CASCADE"
 });
 
 db.sync({ alter: true })
-	.catch((err) => {
-		console.log(err);
-	});
-
+	.catch(err => console.log(err));
+		
 module.exports = { Article, Category };
