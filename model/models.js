@@ -19,7 +19,6 @@ const ArticleSequelize = db.define("article", {
 			model: "category", // not sure about this
 			key: "id"
 		},
-		field: "category_id",
 	},
 	picture: {
 		type: Sequelize.TEXT,
@@ -32,6 +31,7 @@ const ArticleSequelize = db.define("article", {
 }, {
 	freezeTableName: true,
 	tableName: "article",
+	underscored: true,
 });
 
 const CategorySequelize = db.define("category", {
@@ -48,14 +48,12 @@ const CategorySequelize = db.define("category", {
 }, {
 	freezeTableName: true,
 	tableName: "category",
+	underscored: true,
 });
 
 class Article extends ArticleSequelize {
 	static findByName(name) {
 		return Article.findOne({ where: { name: name } });
-	};
-	setCategory(category) {
-		this.categoryId = category.id;
 	};
 };
 
@@ -75,12 +73,6 @@ class Category extends CategorySequelize {
 		}
 		return false;
 	};
-	get id() {
-		return this.id;
-	};
-	get name() {
-		return this.name;
-	}
 };
 
 Category.Article = Category.hasMany(Article, {
