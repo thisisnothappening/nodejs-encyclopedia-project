@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 
-const ArticleSequelize = db.define("article", {
+const Article = db.define("article", {
 	id: {
 		type: Sequelize.INTEGER,
 		autoIncrement: true,
@@ -34,7 +34,7 @@ const ArticleSequelize = db.define("article", {
 	underscored: true,
 });
 
-const CategorySequelize = db.define("category", {
+const Category = db.define("category", {
 	id: {
 		type: Sequelize.INTEGER,
 		autoIncrement: true,
@@ -50,30 +50,6 @@ const CategorySequelize = db.define("category", {
 	tableName: "category",
 	underscored: true,
 });
-
-class Article extends ArticleSequelize {
-	static findByName(name) {
-		return Article.findOne({ where: { name: name } });
-	};
-};
-
-class Category extends CategorySequelize {
-	static existsByPk(id) {
-		if (Category.findByPk() === id) {
-			return true;
-		}
-		return false;
-	};
-	static findByName(name) {
-		return Category.findOne({ where: { name: name } });
-	};
-	static existsByName(name) {
-		if (Category.findByName(name) !== null) {
-			return true;
-		}
-		return false;
-	};
-};
 
 Category.Article = Category.hasMany(Article, {
 	foreignKey: "categoryId" // not sure about this
