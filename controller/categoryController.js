@@ -1,3 +1,4 @@
+const CategoryNotFoundError = require("../error/categoryNotFoundError.js");
 const { Article, Category } = require("../model/models.js");
 
 const getAllCategories = async (req, res) => {
@@ -8,22 +9,32 @@ const getAllCategories = async (req, res) => {
 
 const getCategory = async (req, res) => {
 	let id = req.params.id;
-	let category = await Category.findByPk(id);
-	if (!category) {
-		return res.status(404).json({ "message": `Category not found` });
+	let categoryObject = await Category.findByPk(id);
+	try {
+		if (!categoryObject) {
+			throw new CategoryNotFoundError("Category not found");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
-	res.status(200).send(category);
+	res.status(200).send(categoryObject);
 };
 
 // also deletes all it's articles
 const deleteCategory = async (req, res) => {
 	let id = req.params.id;
 	let categoryObject = await Category.findByPk(id);
-	if (!categoryObject) {
-		return res.status(404).json({ "message": `Category not found` });
+	try {
+		if (!categoryObject) {
+			throw new CategoryNotFoundError("Category not found");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
 	await categoryObject.destroy()
-		.then(() => res.status(200).send("Category deleted"))
+		.then(() => res.status(200).json("Category deleted"))
 		.catch(err => console.log(err));
 };
 

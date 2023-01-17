@@ -1,5 +1,7 @@
 const { Article, Category } = require("../model/models.js");
 const { Op } = require("sequelize");
+const ArticleNotFoundError = require("../error/ArticleNotFoundError");
+const NullFieldError = require("../error/NullFieldError");
 
 const getAllArticles = async (req, res) => {
 	let name = req.query.name;
@@ -21,20 +23,31 @@ const getAllArticles = async (req, res) => {
 const getArticle = async (req, res) => {
 	let id = req.params.id;
 	let article = await Article.findByPk(id);
-	if (!article) {
-		return res.status(404).json({ "message": `Article not found` });
+	try {
+		if (!articleObject) {
+			throw new ArticleNotFoundError("Article not found");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
 	res.status(200).send(article);
 };
 
 const createArticleAndCategory = async (req, res) => {
 	let { name, category, picture, text } = req.body;
-	if (!name || name.trim().length === 0 ||
-		!category || category.trim().length === 0 ||
-		!picture || picture.trim().length === 0 ||
-		!text || text.trim().length === 0) {
-		return res.status(400).json({ "message": `Field cannot be null` });
+	try {
+		if (!name || name.trim().length === 0 ||
+			!category || category.trim().length === 0 ||
+			!picture || picture.trim().length === 0 ||
+			!text || text.trim().length === 0) {
+			throw new NullFieldError("Field cannot be null");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
+
 
 	await Category.findOrCreate({
 		where: { name: category },
@@ -60,11 +73,16 @@ const createArticleAndCategory = async (req, res) => {
 const updateArticle = async (req, res) => {
 	let id = req.params.id;
 	let { name, category, picture, text } = req.body;
-	if (!name || name.trim().length === 0 ||
-		!category || category.trim().length === 0 ||
-		!picture || picture.trim().length === 0 ||
-		!text || text.trim().length === 0) {
-		return res.status(400).json({ "message": `Field cannot be null` });
+	try {
+		if (!name || name.trim().length === 0 ||
+			!category || category.trim().length === 0 ||
+			!picture || picture.trim().length === 0 ||
+			!text || text.trim().length === 0) {
+			throw new NullFieldError("Field cannot be null");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
 
 	await Category.findOrCreate({
@@ -79,8 +97,13 @@ const updateArticle = async (req, res) => {
 		.catch(err => console.log(err));
 
 	let articleObject = await Article.findByPk(id);
-	if (!articleObject) {
-		return res.status(404).json({ "message": `Article not found` });
+	try {
+		if (!articleObject) {
+			throw new ArticleNotFoundError("Article not found");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
 	articleObject.set({
 		name: name,
@@ -97,8 +120,13 @@ const updateArticle = async (req, res) => {
 const deleteArticle = async (req, res) => {
 	let id = req.params.id;
 	let articleObject = await Article.findByPk(id);
-	if (!articleObject) {
-		return res.status(404).json({ "message": `Article not found` });
+	try {
+		if (!articleObject) {
+			throw new ArticleNotFoundError("Article not found");
+		}
+	} catch (err) {
+		console.error(err);
+		return res.status(err.status).json(err.description);
 	}
 	await articleObject.destroy()
 		.then(() => res.status(200).send("Article deleted"))
