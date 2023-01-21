@@ -9,7 +9,7 @@ const getAllCategories = async (req, res) => {
 
 const getCategory = async (req, res) => {
 	let id = req.params.id;
-	let categoryObject = await Category.findByPk(id);
+	let categoryObject = await Category.findByPk(id, { include: Article });
 	try {
 		if (!categoryObject) {
 			throw new CategoryNotFoundError("Category not found");

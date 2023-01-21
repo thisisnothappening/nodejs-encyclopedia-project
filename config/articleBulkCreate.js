@@ -1,5 +1,5 @@
-const { Article, Category } = require("../model/models.js");
-const db = require("./database.js");
+const { db, Article, Category } = require("../model/models.js");
+// const db = require("./database.js");
 
 const reset = async () => {
 	await db.sync({ force: true }) // this function truncates the tables

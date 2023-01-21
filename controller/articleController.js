@@ -9,6 +9,7 @@ const getAllArticles = async (req, res) => {
 	let categoryObject = await Category.findOne({ where: { name: category || "" } })
 		.catch(err => console.log(err));
 	await Article.findAll({
+		include: Category,
 		where: {
 			name: { [Op.substring]: name || "" },
 			categoryId: { [Op.substring]: categoryObject?.id || "" }
@@ -22,9 +23,9 @@ const getAllArticles = async (req, res) => {
 
 const getArticle = async (req, res) => {
 	let id = req.params.id;
-	let article = await Article.findByPk(id);
+	let article = await Article.findByPk(id, { include: Category });
 	try {
-		if (!articleObject) {
+		if (!article) {
 			throw new ArticleNotFoundError("Article not found");
 		}
 	} catch (err) {
@@ -48,7 +49,6 @@ const createArticleAndCategory = async (req, res) => {
 		return res.status(err.status).json(err.description);
 	}
 
-
 	await Category.findOrCreate({
 		where: { name: category },
 		defaults: {
@@ -70,6 +70,7 @@ const createArticleAndCategory = async (req, res) => {
 		.catch(err => console.log(err));
 };
 
+// also deletes categories that are not referenced anymore by any article
 const updateArticle = async (req, res) => {
 	let id = req.params.id;
 	let { name, category, picture, text } = req.body;
@@ -93,7 +94,7 @@ const updateArticle = async (req, res) => {
 	})
 		.catch(err => console.log(err));
 
-	let categoryObject = await Category.findOne({ where: { name: category } })
+	let newCategory = await Category.findOne({ where: { name: category } })
 		.catch(err => console.log(err));
 
 	let articleObject = await Article.findByPk(id);
@@ -105,9 +106,10 @@ const updateArticle = async (req, res) => {
 		console.error(err);
 		return res.status(err.status).json(err.description);
 	}
+	const oldCategory = await Category.findByPk(articleObject.categoryId);
 	articleObject.set({
 		name: name,
-		categoryId: categoryObject.id,
+		categoryId: newCategory.id,
 		picture: picture,
 		text: text,
 	});
@@ -115,8 +117,15 @@ const updateArticle = async (req, res) => {
 	await articleObject.save()
 		.then(articleObject => res.status(200).send(articleObject))
 		.catch(err => console.log(err));
+
+	const anyArticle = await Article.findOne({ where: { categoryId: oldCategory.id } });
+	if (!anyArticle) {
+		await oldCategory.destroy()
+			.catch(err => console.log(err));
+	}
 };
 
+// also deletes categories that are not referenced anymore by any article
 const deleteArticle = async (req, res) => {
 	let id = req.params.id;
 	let articleObject = await Article.findByPk(id);
@@ -128,9 +137,16 @@ const deleteArticle = async (req, res) => {
 		console.error(err);
 		return res.status(err.status).json(err.description);
 	}
+	const categoryObject = await Category.findByPk(articleObject.categoryId);
 	await articleObject.destroy()
-		.then(() => res.status(200).send("Article deleted"))
+		.then((articleObject) => res.status(200).send(articleObject))
 		.catch(err => console.log(err));
+
+	const anyArticle = await Article.findOne({ where: { categoryId: categoryObject.id } });
+	if (!anyArticle) {
+		await categoryObject.destroy()
+			.catch(err => console.log(err));
+	}
 };
 
 module.exports = {
