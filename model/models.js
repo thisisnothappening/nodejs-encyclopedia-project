@@ -15,7 +15,7 @@ const Article = db.define("article", {
 	categoryId: {
 		type: Sequelize.INTEGER,
 		allowNull: false,
-		refernces: {
+		references: {
 			model: "category", // not sure about this
 			key: "id"
 		},
@@ -61,6 +61,6 @@ Article.Category = Article.belongsTo(Category, {
 });
 
 // db.sync({ alter: true })
-// 	.catch(err => console.log(err));
+// 	.catch(err => console.error(err));
 		
 module.exports = { db, Article, Category };

@@ -2,8 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const db = require("./config/database.js");
-const { logger } = require("./middleware/logEvents");
-const errorHandler = require("./middleware/errorHandler");
+const errorHandler = require("./middleware/errorHandler.js");
 
 db.authenticate()
 	.then(() => console.log("Database connected..."))
@@ -11,7 +10,6 @@ db.authenticate()
 
 app.use(express.json());
 app.use(cors());
-app.use(logger);
 
 app.use("/articles", require("./routes/articleRoute"));
 app.use("/categories", require("./routes/categoryRoute"));
