@@ -1,10 +1,10 @@
-class ArticleNotFoundError extends Error {
+class IncorrectPasswordError extends Error {
 	constructor (message) {
 		super(message);
 		this.name = this.constructor.name;
 		Error.captureStackTrace(this, this.constructor);
-		this.status = 404;
+		this.status = 400;
 	}
 }
 
-module.exports = ArticleNotFoundError;
+module.exports = IncorrectPasswordError;

@@ -5,15 +5,21 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-	"reset": "node config/articleReader.js"
+    "reset": "node config/articleReader.js"
   },
   "author": "Negoiu Paul | thisisnothappening",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "date-fns": "^2.29.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
     "mysql2": "^2.3.3",
     "sequelize": "^6.28.0"
+  },
+  "devDependencies": {
+    "jest": "^29.4.0"
   }
 }

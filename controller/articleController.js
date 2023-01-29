@@ -1,9 +1,9 @@
 const { Article, Category } = require("../model/models.js");
 const { Op } = require("sequelize");
-const ArticleNotFoundError = require("../error/ArticleNotFoundError");
 const NullFieldError = require("../error/NullFieldError");
 const logError = require("../middleware/logError.js");
 const logRequest = require("../middleware/logRequest.js");
+const ResourceNotFoundError = require("../error/ResourceNotFoundError.js");
 
 const getAllArticles = async (req, res) => {
 	let name = req.query.name;
@@ -14,7 +14,7 @@ const getAllArticles = async (req, res) => {
 		include: Category,
 		where: {
 			name: { [Op.substring]: name || "" },
-			categoryId: { [Op.substring]: categoryObject?.id || "" }
+			...(categoryObject && { categoryId: categoryObject.id})
 		}
 	})
 		.then(articles => {
@@ -29,7 +29,7 @@ const getArticle = async (req, res) => {
 		.catch(err => console.error(err));
 	try {
 		if (!article) {
-			throw new ArticleNotFoundError("Article not found");
+			throw new ResourceNotFoundError("Article not found");
 		}
 	} catch (err) {
 		logError(err);
@@ -41,10 +41,10 @@ const getArticle = async (req, res) => {
 
 const createArticleAndCategory = async (req, res) => {
 	logRequest(req);
-	let { name, category, picture, text } = req.body;
+	let { name, category: categoryName, picture, text } = req.body;
 	try {
 		if (!name || name.trim().length === 0 ||
-			!category || category.trim().length === 0 ||
+			!categoryName || categoryName.trim().length === 0 ||
 			!picture || picture.trim().length === 0 ||
 			!text || text.trim().length === 0) {
 			throw new NullFieldError("Field cannot be null");
@@ -56,8 +56,8 @@ const createArticleAndCategory = async (req, res) => {
 	}
 
 	let [categoryObject] = await Category.findOrCreate({
-		where: { name: category },
-		defaults: { name: category }
+		where: { name: categoryName },
+		defaults: { name: categoryName }
 	})
 		.catch(err => console.error(err));
 	await Article.create({
@@ -74,10 +74,10 @@ const createArticleAndCategory = async (req, res) => {
 const updateArticle = async (req, res) => {
 	logRequest(req);
 	let id = req.params.id;
-	let { name, category, picture, text } = req.body;
+	let { name, category: categoryName, picture, text } = req.body;
 	try {
 		if (!name || name.trim().length === 0 ||
-			!category || category.trim().length === 0 ||
+			!categoryName || categoryName.trim().length === 0 ||
 			!picture || picture.trim().length === 0 ||
 			!text || text.trim().length === 0) {
 			throw new NullFieldError("Field cannot be null");
@@ -89,15 +89,15 @@ const updateArticle = async (req, res) => {
 	}
 
 	let [newCategory] = await Category.findOrCreate({
-		where: { name: category },
-		defaults: { name: category }
+		where: { name: categoryName },
+		defaults: { name: categoryName }
 	})
 		.catch(err => console.error(err));
 	let articleObject = await Article.findByPk(id)
 		.catch(err => console.error(err));
 	try {
 		if (!articleObject) {
-			throw new ArticleNotFoundError("Article not found");
+			throw new ResourceNotFoundError("Article not found");
 		}
 	} catch (err) {
 		logError(err);
@@ -133,7 +133,7 @@ const deleteArticle = async (req, res) => {
 		.catch(err => console.error(err));
 	try {
 		if (!articleObject) {
-			throw new ArticleNotFoundError("Article not found");
+			throw new ResourceNotFoundError("Article not found");
 		}
 	} catch (err) {
 		logError(err);

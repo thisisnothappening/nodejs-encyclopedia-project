@@ -1,4 +1,4 @@
-class CategoryNotFoundError extends Error {
+class ResourceNotFoundError extends Error {
 	constructor (message) {
 		super(message);
 		this.name = this.constructor.name;
@@ -7,4 +7,4 @@ class CategoryNotFoundError extends Error {
 	}
 }
 
-module.exports = CategoryNotFoundError;
+module.exports = ResourceNotFoundError;

@@ -1,4 +1,4 @@
-const CategoryNotFoundError = require("../error/categoryNotFoundError.js");
+const ResourceNotFoundError = require("../error/ResourceNotFoundError.js");
 const logError = require("../middleware/logError.js");
 const logRequest = require("../middleware/logRequest.js");
 const { Article, Category } = require("../model/models.js");
@@ -14,7 +14,7 @@ const getCategory = async (req, res) => {
 	let categoryObject = await Category.findByPk(id, { include: Article });
 	try {
 		if (!categoryObject) {
-			throw new CategoryNotFoundError("Category not found");
+			throw new ResourceNotFoundError("Category not found");
 		}
 	} catch (err) {
 		logError(err);
@@ -32,7 +32,7 @@ const deleteCategory = async (req, res) => {
 		.catch(err => console.error(err));
 	try {
 		if (!categoryObject) {
-			throw new CategoryNotFoundError("Category not found");
+			throw new ResourceNotFoundError("Category not found");
 		}
 	} catch (err) {
 		logError(err);
