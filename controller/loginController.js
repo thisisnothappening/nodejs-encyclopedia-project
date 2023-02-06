@@ -24,7 +24,7 @@ const login = async (req, res) => {
 			throw new IncorrectPasswordError("Incorrect password");
 		}
 
-		const token = jwt.sign({ id: user.id }, `${process.env.JWT_SECRET}`, { expiresIn: '1d' });
+		const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
 		res.cookie('token', token, { httpOnly: true, secure: true })
 			.status(200)
