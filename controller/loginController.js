@@ -26,7 +26,7 @@ const login = async (req, res) => {
 
 		const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
-		res.cookie('token', token, { httpOnly: true, secure: true })
+		res.cookie('token', token, { httpOnly: false, secure: true, maxAge: 1 * 24 * 60 * 60 * 1000 })
 			.status(200)
 			.send({ token });
 	} catch (err) {

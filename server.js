@@ -4,6 +4,7 @@ const cors = require("cors");
 const db = require("./config/database.js");
 const errorHandler = require("./middleware/errorHandler.js");
 const cookieParser = require('cookie-parser');
+require("dotenv").config();
 
 db.authenticate()
 	.then(() => console.log("Database connected..."))
