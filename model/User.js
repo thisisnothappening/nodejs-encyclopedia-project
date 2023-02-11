@@ -15,6 +15,9 @@ const User = db.define("users", {
         type: Sequelize.STRING,
         allowNull: false,
     },
+	refreshToken: {
+		type: Sequelize.STRING,
+	},
 }, {
 	freezeTableName: true,
 	tableName: "user",

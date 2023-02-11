@@ -14,7 +14,7 @@ const getAllArticles = async (req, res) => {
 		include: Category,
 		where: {
 			name: { [Op.substring]: name || "" },
-			...(categoryObject && { categoryId: categoryObject.id})
+			...(categoryObject && { categoryId: categoryObject.id })
 		}
 	})
 		.then(articles => {
@@ -73,55 +73,48 @@ const createArticleAndCategory = async (req, res) => {
 // also deletes categories that are not referenced anymore by any article
 const updateArticle = async (req, res) => {
 	logRequest(req);
-	let id = req.params.id;
-	let { name, category: categoryName, picture, text } = req.body;
 	try {
+		let id = req.params.id;
+		let { name, category: categoryName, picture, text } = req.body;
 		if (!name || name.trim().length === 0 ||
 			!categoryName || categoryName.trim().length === 0 ||
 			!picture || picture.trim().length === 0 ||
 			!text || text.trim().length === 0) {
 			throw new NullFieldError("Field cannot be null");
 		}
-	} catch (err) {
-		logError(err);
-		console.error(err);
-		return res.status(err.status).json({ message: err.message });
-	}
-
-	let [newCategory] = await Category.findOrCreate({
-		where: { name: categoryName },
-		defaults: { name: categoryName }
-	})
-		.catch(err => console.error(err));
-	let articleObject = await Article.findByPk(id)
-		.catch(err => console.error(err));
-	try {
+		let [newCategory] = await Category.findOrCreate({
+			where: { name: categoryName },
+			defaults: { name: categoryName }
+		})
+			.catch(err => console.error(err));
+		let articleObject = await Article.findByPk(id)
+			.catch(err => console.error(err));
 		if (!articleObject) {
 			throw new ResourceNotFoundError("Article not found");
+		}
+		const oldCategory = await Category.findByPk(articleObject.categoryId)
+			.catch(err => console.error(err));
+		articleObject.set({
+			name: name,
+			categoryId: newCategory.id,
+			picture: picture,
+			text: text,
+		});
+
+		await articleObject.save()
+			.then(articleObject => res.status(200).send(articleObject))
+			.catch(err => console.error(err));
+
+		const anyArticle = await Article.findOne({ where: { categoryId: oldCategory.id } })
+			.catch(err => console.error(err));
+		if (!anyArticle) {
+			await oldCategory.destroy()
+				.catch(err => console.error(err));
 		}
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		return res.status(err.status).json({ message: err.message });
-	}
-	const oldCategory = await Category.findByPk(articleObject.categoryId)
-		.catch(err => console.error(err));
-	articleObject.set({
-		name: name,
-		categoryId: newCategory.id,
-		picture: picture,
-		text: text,
-	});
-
-	await articleObject.save()
-		.then(articleObject => res.status(200).send(articleObject))
-		.catch(err => console.error(err));
-
-	const anyArticle = await Article.findOne({ where: { categoryId: oldCategory.id } })
-		.catch(err => console.error(err));
-	if (!anyArticle) {
-		await oldCategory.destroy()
-			.catch(err => console.error(err));
+		return res.status(err.status || 500).send({ error: err.message });
 	}
 };
 

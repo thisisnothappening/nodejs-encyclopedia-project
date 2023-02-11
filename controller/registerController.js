@@ -26,7 +26,7 @@ const register = async (req, res) => {
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		res.status(400).send({ error: err.message });
+		return res.status(err.status || 500).send({ error: err.message });
 	}
 };
 

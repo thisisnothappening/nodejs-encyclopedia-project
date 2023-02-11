@@ -14,7 +14,6 @@ const login = async (req, res) => {
 		if (!email || !password) {
 			throw new NullFieldError("Field cannot be null");
 		}
-
 		const user = await User.findOne({ where: { email: email } });
 		if (!user) {
 			throw new ResourceNotFoundError("User not found");
@@ -24,15 +23,31 @@ const login = async (req, res) => {
 			throw new IncorrectPasswordError("Incorrect password");
 		}
 
-		const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+		const accessToken = jwt.sign(
+			{ id: user.id },
+			process.env.ACCESS_TOKEN_SECRET,
+			{ expiresIn: '10m' }
+		);
+		const refreshToken = jwt.sign(
+			{ id: user.id },
+			process.env.REFRESH_TOKEN_SECRET,
+			{ expiresIn: '1d' }
+		);
+		user.refreshToken = refreshToken;
+		await user.save();
 
-		res.cookie('token', token, { httpOnly: false, secure: true, maxAge: 1 * 24 * 60 * 60 * 1000 })
+		res.cookie("token", refreshToken, {
+			httpOnly: false,
+			secure: true,
+			sameSite: "None",
+			maxAge: 24 * 60 * 60 * 1000
+		})
 			.status(200)
-			.send({ token });
+			.send({ accessToken });
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		res.status(500).send({ error: err.message });
+		return res.status(err.status || 500).send({ error: err.message });
 	}
 };
 
