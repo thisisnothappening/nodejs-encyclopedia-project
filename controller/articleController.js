@@ -6,75 +6,43 @@ const logRequest = require("../middleware/logRequest.js");
 const ResourceNotFoundError = require("../error/ResourceNotFoundError.js");
 
 const getAllArticles = async (req, res) => {
-	let name = req.query.name;
-	let category = req.query.category;
-	let categoryObject = await Category.findOne({ where: { name: category || "" } })
-		.catch(err => console.error(err));
-	await Article.findAll({
-		include: Category,
-		where: {
-			name: { [Op.substring]: name || "" },
-			...(categoryObject && { categoryId: categoryObject.id })
-		}
-	})
-		.then(articles => {
-			res.status(200).send(articles);
-		})
-		.catch(err => console.error(err));
-};
-
-const getArticle = async (req, res) => {
-	let id = req.params.id;
-	let article = await Article.findByPk(id, { include: Category })
-		.catch(err => console.error(err));
 	try {
-		if (!article) {
-			throw new ResourceNotFoundError("Article not found");
-		}
+		let name = req.query.name;
+		let category = req.query.category;
+		let categoryObject = await Category.findOne({ where: { name: category || "" } });
+		await Article.findAll({
+			include: Category,
+			where: {
+				name: { [Op.substring]: name || "" },
+				...(categoryObject && { categoryId: categoryObject.id })
+			}
+		})
+			.then(articles => res.status(200).send(articles));
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		return res.status(err.status).json({ message: err.message });
+		return res.status(err.status || 500).json({ error: err.message });
 	}
-	res.status(200).send(article);
+
+};
+
+const getArticle = async (req, res) => {
+	try {
+		let article = await Article.findByPk(req.params.id, { include: Category });
+		if (!article) {
+			throw new ResourceNotFoundError("Article not found");
+		}
+		res.status(200).send(article);
+	} catch (err) {
+		logError(err);
+		console.error(err);
+		return res.status(err.status || 500).json({ error: err.message });
+	}
 };
 
 const createArticleAndCategory = async (req, res) => {
 	logRequest(req);
-	let { name, category: categoryName, picture, text } = req.body;
 	try {
-		if (!name || name.trim().length === 0 ||
-			!categoryName || categoryName.trim().length === 0 ||
-			!picture || picture.trim().length === 0 ||
-			!text || text.trim().length === 0) {
-			throw new NullFieldError("Field cannot be null");
-		}
-	} catch (err) {
-		logError(err);
-		console.error(err);
-		return res.status(err.status).json({ message: err.message });
-	}
-
-	let [categoryObject] = await Category.findOrCreate({
-		where: { name: categoryName },
-		defaults: { name: categoryName }
-	})
-		.catch(err => console.error(err));
-	await Article.create({
-		name: name,
-		categoryId: categoryObject.id,
-		picture: picture,
-		text: text,
-	})
-		.then(article => res.status(201).send(article))
-		.catch(err => console.error(err));
-};
-
-// also deletes categories that are not referenced anymore by any article
-const updateArticle = async (req, res) => {
-	logRequest(req);
-	try {
-		let id = req.params.id;
 		let { name, category: categoryName, picture, text } = req.body;
 		if (!name || name.trim().length === 0 ||
 			!categoryName || categoryName.trim().length === 0 ||
@@ -82,18 +50,44 @@ const updateArticle = async (req, res) => {
 			!text || text.trim().length === 0) {
 			throw new NullFieldError("Field cannot be null");
 		}
-		let [newCategory] = await Category.findOrCreate({
+		const [categoryObject] = await Category.findOrCreate({
 			where: { name: categoryName },
 			defaults: { name: categoryName }
+		});
+		await Article.create({
+			name: name,
+			categoryId: categoryObject.id,
+			picture: picture,
+			text: text,
 		})
-			.catch(err => console.error(err));
-		let articleObject = await Article.findByPk(id)
-			.catch(err => console.error(err));
+			.then(article => res.status(201).send(article));
+	} catch (err) {
+		logError(err);
+		console.error(err);
+		return res.status(err.status || 500).json({ error: err.message });
+	}
+};
+
+// also deletes categories that are not referenced anymore by any article
+const updateArticle = async (req, res) => {
+	logRequest(req);
+	try {
+		let { name, category: categoryName, picture, text } = req.body;
+		if (!name || name.trim().length === 0 ||
+			!categoryName || categoryName.trim().length === 0 ||
+			!picture || picture.trim().length === 0 ||
+			!text || text.trim().length === 0) {
+			throw new NullFieldError("Field cannot be null");
+		}
+		const [newCategory] = await Category.findOrCreate({
+			where: { name: categoryName },
+			defaults: { name: categoryName }
+		});
+		let articleObject = await Article.findByPk(req.params.id);
 		if (!articleObject) {
 			throw new ResourceNotFoundError("Article not found");
 		}
-		const oldCategory = await Category.findByPk(articleObject.categoryId)
-			.catch(err => console.error(err));
+		const oldCategory = await Category.findByPk(articleObject.categoryId);
 		articleObject.set({
 			name: name,
 			categoryId: newCategory.id,
@@ -101,15 +95,12 @@ const updateArticle = async (req, res) => {
 			text: text,
 		});
 
-		await articleObject.save()
-			.then(articleObject => res.status(200).send(articleObject))
-			.catch(err => console.error(err));
+		await articleObject.save();
+		res.status(200).send(articleObject);
 
-		const anyArticle = await Article.findOne({ where: { categoryId: oldCategory.id } })
-			.catch(err => console.error(err));
+		const anyArticle = await Article.findOne({ where: { categoryId: oldCategory.id } });
 		if (!anyArticle) {
-			await oldCategory.destroy()
-				.catch(err => console.error(err));
+			await oldCategory.destroy();
 		}
 	} catch (err) {
 		logError(err);
@@ -121,29 +112,24 @@ const updateArticle = async (req, res) => {
 // also deletes categories that are not referenced anymore by any article
 const deleteArticle = async (req, res) => {
 	logRequest(req);
-	let id = req.params.id;
-	let articleObject = await Article.findByPk(id)
-		.catch(err => console.error(err));
 	try {
+		let articleObject = await Article.findByPk(req.params.id);
 		if (!articleObject) {
 			throw new ResourceNotFoundError("Article not found");
+		}
+
+		const categoryObject = await Category.findByPk(articleObject.categoryId);
+		await articleObject.destroy();
+		res.status(200).send({ message: "Article deleted successfully" });
+
+		const anyArticle = await Article.findOne({ where: { categoryId: categoryObject.id } });
+		if (!anyArticle) {
+			await categoryObject.destroy();
 		}
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		return res.status(err.status).json({ message: err.message });
-	}
-	const categoryObject = await Category.findByPk(articleObject.categoryId)
-		.catch(err => console.error(err));
-	await articleObject.destroy()
-		.then(() => res.status(200).send({ message: "Article deleted successfully" }))
-		.catch(err => console.error(err));
-
-	const anyArticle = await Article.findOne({ where: { categoryId: categoryObject.id } })
-		.catch(err => console.error(err));
-	if (!anyArticle) {
-		await categoryObject.destroy()
-			.catch(err => console.error(err));
+		return res.status(err.status || 500).json({ error: err.message });
 	}
 };
 

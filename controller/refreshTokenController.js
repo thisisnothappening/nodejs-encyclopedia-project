@@ -8,10 +8,11 @@ const refreshToken = async (req, res) => {
 	logRequest(req);
 	try {
 		const cookies = req.cookies;
-		if (!cookies?.jwt) {
-			throw new ResourceNotFoundError("Token not found");
+		if (!cookies?.token) {
+			// throw new ResourceNotFoundError("Token not found");
+			return;
 		}
-		const refreshToken = cookies.jwt;
+		const refreshToken = cookies.token;
 		console.log(refreshToken);
 
 		const user = await User.findOne({ where: { refreshToken: refreshToken } });
@@ -29,9 +30,9 @@ const refreshToken = async (req, res) => {
 				const accessToken = jwt.sign(
 					{ id: user.id },
 					process.env.ACCESS_TOKEN_SECRET,
-					{ expiresIn: "10m" }
+					{ expiresIn: "10s" } // change back to 10m
 				);
-				res.json({ accessToken });
+				res.json({ accessToken, user });
 			}
 		);
 	} catch (err) {

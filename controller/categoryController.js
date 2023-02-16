@@ -4,44 +4,45 @@ const logRequest = require("../middleware/logRequest.js");
 const { Article, Category } = require("../model/models.js");
 
 const getAllCategories = async (req, res) => {
-	await Category.findAll()
-		.then(categories => res.status(200).send(categories))
-		.catch(err => console.error(err));
-};
-
-const getCategory = async (req, res) => {
-	let id = req.params.id;
-	let categoryObject = await Category.findByPk(id, { include: Article });
 	try {
-		if (!categoryObject) {
-			throw new ResourceNotFoundError("Category not found");
-		}
+		const categories = await Category.findAll();
+		res.status(200).send(categories);
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		return res.status(err.status).json({ message: err.message });
+		return res.status(err.status || 500).json({ error: err.message });
 	}
-	res.status(200).send(categoryObject);
+};
+
+const getCategory = async (req, res) => {
+	try {
+		const categoryObject = await Category.findByPk(req.params.id, { include: Article });
+		if (!categoryObject) {
+			throw new ResourceNotFoundError("Category not found");
+		}
+		res.status(200).send(categoryObject);
+	} catch (err) {
+		logError(err);
+		console.error(err);
+		return res.status(err.status || 500).json({ error: err.message });
+	}
 };
 
 // also deletes all it's articles
 const deleteCategory = async (req, res) => {
 	logRequest(req);
-	let id = req.params.id;
-	let categoryObject = await Category.findByPk(id)
-		.catch(err => console.error(err));
 	try {
+		let categoryObject = await Category.findByPk(req.params.id);
 		if (!categoryObject) {
 			throw new ResourceNotFoundError("Category not found");
 		}
+		await categoryObject.destroy();
+		res.status(200).send({ message: "Category deleted successfully" });
 	} catch (err) {
 		logError(err);
 		console.error(err);
-		return res.status(err.status).json({ message: err.message });
+		return res.status(err.status || 500).json({ error: err.message });
 	}
-	await categoryObject.destroy()
-		.then(() => res.status(200).send({ message: "Category deleted successfully" }))
-		.catch(err => console.error(err));
 };
 
 module.exports = {
