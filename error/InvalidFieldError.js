@@ -1,4 +1,4 @@
-class IncorrectPasswordError extends Error {
+class InvalidFieldError extends Error {
 	constructor (message) {
 		super(message);
 		this.name = this.constructor.name;
@@ -7,4 +7,4 @@ class IncorrectPasswordError extends Error {
 	}
 }
 
-module.exports = IncorrectPasswordError;
+module.exports = InvalidFieldError;

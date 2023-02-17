@@ -16,6 +16,8 @@ const refreshToken = async (req, res) => {
 		if (!user) {
 			throw new ResourceNotFoundError("User not found");
 		}
+		const email = user.email;
+		const username = user.username;
 
 		jwt.verify(
 			refreshToken,
@@ -27,9 +29,9 @@ const refreshToken = async (req, res) => {
 				const accessToken = jwt.sign(
 					{ id: user.id },
 					process.env.ACCESS_TOKEN_SECRET,
-					{ expiresIn: "10s" } // change back to 10m
+					{ expiresIn: "30m" }
 				);
-				res.json({ accessToken, user });
+				res.json({ accessToken, email, username });
 			}
 		);
 	} catch (err) {

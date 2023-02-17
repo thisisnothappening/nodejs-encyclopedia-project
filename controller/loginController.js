@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const logRequest = require('../middleware/logRequest');
 const NullFieldError = require('../error/NullFieldError.js');
 const ResourceNotFoundError = require("../error/ResourceNotFoundError.js");
-const IncorrectPasswordError = require("../error/IncorrectPasswordError");
+const InvalidFieldError = require("../error/InvalidFieldError");
 
 const login = async (req, res) => {
 	try {
@@ -18,13 +18,13 @@ const login = async (req, res) => {
 		}
 		const isValid = await bcrypt.compare(password, user.password);
 		if (!isValid) {
-			throw new IncorrectPasswordError("Incorrect password");
+			throw new InvalidFieldError("Incorrect password");
 		}
 
 		const accessToken = jwt.sign(
 			{ id: user.id },
 			process.env.ACCESS_TOKEN_SECRET,
-			{ expiresIn: '10s' } // change back to 10m
+			{ expiresIn: '30m' }
 		);
 		const refreshToken = jwt.sign(
 			{ id: user.id },
