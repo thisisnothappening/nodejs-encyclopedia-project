@@ -1,7 +1,6 @@
 const { Article, Category } = require("../model/models.js");
 const { Op } = require("sequelize");
 const NullFieldError = require("../error/NullFieldError");
-const logError = require("../middleware/logError.js");
 const logRequest = require("../middleware/logRequest.js");
 const ResourceNotFoundError = require("../error/ResourceNotFoundError.js");
 
@@ -19,7 +18,6 @@ const getAllArticles = async (req, res) => {
 		})
 			.then(articles => res.status(200).send(articles));
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).json({ error: err.message });
 	}
@@ -34,14 +32,12 @@ const getArticle = async (req, res) => {
 		}
 		res.status(200).send(article);
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).json({ error: err.message });
 	}
 };
 
 const createArticleAndCategory = async (req, res) => {
-	logRequest(req);
 	try {
 		let { name, category: categoryName, picture, text } = req.body;
 		if (!name || name.trim().length === 0 ||
@@ -54,15 +50,15 @@ const createArticleAndCategory = async (req, res) => {
 			where: { name: categoryName },
 			defaults: { name: categoryName }
 		});
-		await Article.create({
+		const articleObject = await Article.create({
 			name: name,
 			categoryId: categoryObject.id,
 			picture: picture,
 			text: text,
-		})
-			.then(article => res.status(201).send(article));
+		});
+		res.status(201).send(articleObject);
+		logRequest(`Article ${articleObject.id} has been created.`);
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).json({ error: err.message });
 	}
@@ -70,7 +66,6 @@ const createArticleAndCategory = async (req, res) => {
 
 // also deletes categories that are not referenced anymore by any article
 const updateArticle = async (req, res) => {
-	logRequest(req);
 	try {
 		let { name, category: categoryName, picture, text } = req.body;
 		if (!name || name.trim().length === 0 ||
@@ -97,13 +92,13 @@ const updateArticle = async (req, res) => {
 
 		await articleObject.save();
 		res.status(200).send(articleObject);
+		logRequest(`Article ${articleObject.id} has been updated.`);
 
 		const anyArticle = await Article.findOne({ where: { categoryId: oldCategory.id } });
 		if (!anyArticle) {
 			await oldCategory.destroy();
 		}
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).send({ error: err.message });
 	}
@@ -111,7 +106,6 @@ const updateArticle = async (req, res) => {
 
 // also deletes categories that are not referenced anymore by any article
 const deleteArticle = async (req, res) => {
-	logRequest(req);
 	try {
 		let articleObject = await Article.findByPk(req.params.id);
 		if (!articleObject) {
@@ -119,15 +113,16 @@ const deleteArticle = async (req, res) => {
 		}
 
 		const categoryObject = await Category.findByPk(articleObject.categoryId);
+		const articleId = articleObject.id;
 		await articleObject.destroy();
 		res.status(200).send({ message: "Article deleted successfully" });
+		logRequest(`Article ${articleId} has been deleted.`);
 
 		const anyArticle = await Article.findOne({ where: { categoryId: categoryObject.id } });
 		if (!anyArticle) {
 			await categoryObject.destroy();
 		}
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).json({ error: err.message });
 	}

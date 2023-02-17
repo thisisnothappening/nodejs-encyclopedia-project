@@ -1,14 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/User.js');
 const bcrypt = require('bcrypt');
-const logError = require('../middleware/logError.js');
 const logRequest = require('../middleware/logRequest');
 const NullFieldError = require('../error/NullFieldError.js');
 const ResourceNotFoundError = require("../error/ResourceNotFoundError.js");
 const IncorrectPasswordError = require("../error/IncorrectPasswordError");
 
 const login = async (req, res) => {
-	logRequest(req);
 	try {
 		const { email, password } = req.body;
 		if (!email || !password) {
@@ -44,8 +42,8 @@ const login = async (req, res) => {
 		})
 			.status(200)
 			.send({ accessToken });
+		logRequest(`User ${user.id} has logged in.`);
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).send({ error: err.message });
 	}

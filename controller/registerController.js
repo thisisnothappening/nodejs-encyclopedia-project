@@ -1,5 +1,4 @@
 const bcrypt = require('bcrypt');
-const logError = require('../middleware/logError');
 const logRequest = require('../middleware/logRequest');
 const User = require('../model/user');
 const NullFieldError = require('../error/NullFieldError.js');
@@ -7,7 +6,6 @@ const DuplicateValueError = require("../error/DuplicateValueError");
 const IncorrectPasswordError = require('../error/IncorrectPasswordError');
 
 const register = async (req, res) => {
-	logRequest(req);
 	try {
 		const { email, username, password, secretCode } = req.body;
 
@@ -31,8 +29,8 @@ const register = async (req, res) => {
 		});
 
 		res.status(201).send({ user });
+		logRequest(`User ${user.id} has been created.`);
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).send({ error: err.message });
 	}

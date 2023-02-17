@@ -1,11 +1,8 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/User.js');
-const logError = require('../middleware/logError.js');
-const logRequest = require('../middleware/logRequest');
 const ResourceNotFoundError = require('../error/ResourceNotFoundError');
 
 const refreshToken = async (req, res) => {
-	logRequest(req);
 	try {
 		const cookies = req.cookies;
 		if (!cookies?.token) {
@@ -36,7 +33,6 @@ const refreshToken = async (req, res) => {
 			}
 		);
 	} catch (err) {
-		logError(err);
 		console.error(err);
 		return res.status(err.status || 500).send({ error: err.message });
 	}
