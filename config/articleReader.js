@@ -14,7 +14,7 @@ const wikipediaReferenceBracketsRemover = async () => {
 		let lines = data.split("\n");
 		for (let i = 0; i < lines.length; i++) {
 			let line = lines[i];
-			await fsPromises.appendFile(fileArticlesImprovedPath, line.replace(new RegExp("\\[(.*?)]", "g"), ""));
+			await fsPromises.appendFile(fileArticlesImprovedPath, line.replace(/\[(.*?)]/g, ""));
 			await fsPromises.appendFile(fileArticlesImprovedPath, "\n");
 		}
 	} catch (err) {
@@ -25,7 +25,7 @@ const wikipediaReferenceBracketsRemover = async () => {
 const reset = async () => {
 	await wikipediaReferenceBracketsRemover();
 	try {
-		await db.sync({ force: true }); // this function truncates the tables
+		await db.sync({ force: true, match: /_test$/ }); // this function truncates the tables
 
 		const data = await fsPromises.readFile(fileArticlesImprovedPath, "utf-8");
 		let lines = data.split("\n");

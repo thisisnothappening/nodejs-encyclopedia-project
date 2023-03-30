@@ -21,7 +21,6 @@ const getAllArticles = async (req, res) => {
 		console.error(err);
 		return res.status(err.status || 500).json({ error: err.message });
 	}
-
 };
 
 const getArticle = async (req, res) => {
@@ -74,14 +73,15 @@ const updateArticle = async (req, res) => {
 			!text || text.trim().length === 0) {
 			throw new NullFieldError("Field cannot be null");
 		}
-		const [newCategory] = await Category.findOrCreate({
+		const [newCategory] = Category.findOrCreate({
 			where: { name: categoryName },
 			defaults: { name: categoryName }
 		});
-		let articleObject = await Article.findByPk(req.params.id);
+		let articleObject = Article.findByPk(req.params.id);
 		if (!articleObject) {
 			throw new ResourceNotFoundError("Article not found");
 		}
+		await Promise.all([newCategory, articleObject])
 		const oldCategory = await Category.findByPk(articleObject.categoryId);
 		articleObject.set({
 			name: name,

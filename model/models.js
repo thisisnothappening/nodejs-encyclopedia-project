@@ -61,7 +61,7 @@ Article.Category = Article.belongsTo(Category, {
 	onDelete: "CASCADE"
 });
 
-// db.sync({ alter: true })
-// 	.catch(err => console.error(err));
+db.sync({ alter: true, match: /_test$/ })
+	.catch(err => console.error(err));
 		
 module.exports = { db, Article, Category };

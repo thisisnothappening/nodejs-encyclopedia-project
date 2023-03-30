@@ -24,4 +24,7 @@ const User = db.define("users", {
 	underscored: true,
 });
 
+db.sync({ alter: true, match: /_test$/ })
+	.catch(err => console.error(err));
+
 module.exports = User;
