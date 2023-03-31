@@ -30,4 +30,5 @@ app.get('*', function (req, res) {
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const host = "0.0.0.0";
+app.listen(port, host, () => console.log(`Listening on port ${port}...`));
