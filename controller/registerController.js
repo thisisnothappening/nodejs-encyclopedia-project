@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const logRequest = require('../middleware/logRequest');
-const User = require('../model/user');
+const User = require('../model/User');
 const NullFieldError = require('../error/NullFieldError.js');
 const DuplicateValueError = require("../error/DuplicateValueError");
 const InvalidFieldError = require('../error/InvalidFieldError');
