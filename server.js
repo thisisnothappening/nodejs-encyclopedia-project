@@ -4,6 +4,7 @@ const cors = require("cors");
 const db = require("./config/database.js");
 const errorHandler = require("./middleware/errorHandler.js");
 const cookieParser = require('cookie-parser');
+const path = require("path");
 require("dotenv").config();
 
 db.authenticate()
@@ -21,6 +22,12 @@ app.use("/articles", require("./routes/articles"));
 app.use("/categories", require("./routes/categories"));
 
 app.use(errorHandler);
+
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get('*', function (req, res) {
+	res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Listening on port ${port}...`));

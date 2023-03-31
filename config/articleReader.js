@@ -25,7 +25,8 @@ const wikipediaReferenceBracketsRemover = async () => {
 const reset = async () => {
 	await wikipediaReferenceBracketsRemover();
 	try {
-		await db.sync({ force: true, match: /_test$/ }); // this function truncates the tables
+		// this function call truncates the article and category tables
+		await db.sync({ force: true, match: /_test$/ }); 
 
 		const data = await fsPromises.readFile(fileArticlesImprovedPath, "utf-8");
 		let lines = data.split("\n");
