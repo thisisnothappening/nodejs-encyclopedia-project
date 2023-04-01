@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "reset": "node config/articleReader.js",
-	"heroku-postbuild": "npm install"
+    "reset": "node config/articleReader.js"
   },
   "author": "Negoiu Paul | thisisnothappening",
   "license": "ISC",
