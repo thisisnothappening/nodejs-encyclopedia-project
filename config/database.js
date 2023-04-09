@@ -14,6 +14,8 @@ const db = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.D
 	dialect: process.env.DB_DIALECT,
 });
 
+console.log("This line is for me to learn how to git pull");
+
 if (process.env.NODE_ENV === "development")
 	db.sync({ alter: true, match: /_test$/ })
 		.catch(err => console.error(err));
