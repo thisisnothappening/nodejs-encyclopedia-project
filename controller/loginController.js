@@ -34,10 +34,13 @@ const login = async (req, res) => {
 		user.refreshToken = refreshToken;
 		await user.save();
 
+		// if you have and SSL certificate, and want to test the website on a URL other than localhost,
+		// then set `secure: true` and `sameSite: "None"`,
+		// and do the same for the logout function
 		res.cookie("token", refreshToken, {
 			httpOnly: true,
-			secure: true,
-			sameSite: "None",
+			secure: false,
+			sameSite: "Lax",
 			maxAge: 24 * 60 * 60 * 1000
 		})
 			.status(200)
