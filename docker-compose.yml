@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  encyclopedia:
+    image: thisisnothappening/nodejs-encyclopedia-project:alpine-cors-dev-latest
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+      - .env.development
+    networks:
+      - encyclopedia-network
+
+networks:
+  encyclopedia-network:
+    external: true

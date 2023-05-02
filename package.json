@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server.js",
     "prod": "cross-env NODE_ENV=production node server.js",
-    "reset": "node config/articleReader.js"
+    "reset": "cross-env NODE_ENV=development node config/articleReader.js",
+	"test": "cross-env NODE_ENV=development jest",
+	"stage": "cross-env NODE_ENV=production jest"
   },
   "author": "Negoiu Paul | thisisnothappening",
   "license": "ISC",
