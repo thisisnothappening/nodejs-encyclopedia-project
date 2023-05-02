@@ -17,12 +17,12 @@ pipeline {
 			}
 		}
 		stage("Deploy") {
-			when  {
-				anyOf {
-      				branch 'main'
-      				branch 'master'
-   				}
-			}
+			// when  {
+			// 	anyOf {
+      		// 		branch 'main'
+      		// 		branch 'master'
+   			// 	}
+			// }
 			steps {
 				sh "docker build -t nodejs-encyclopedia-project:alpine-cors-prod-latest ."
 				sh "docker tag nodejs-encyclopedia-project:alpine-cors-prod-latest thisisnothappening/nodejs-encyclopedia-project:alpine-cors-prod-latest"
