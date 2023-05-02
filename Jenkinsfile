@@ -1,7 +1,6 @@
 pipeline {
 	agent {
 		node {
-			image "node:alpine"
 			label "encyclopedia-project-agent"
 		}
 	}
