@@ -1,8 +1,6 @@
 pipeline {
 	agent {
-		node {
-			label "encyclopedia-project-agent"
-		}
+		label "encyclopedia-project-agent"
 	}
 	triggers {
         pollSCM '* * * * *'
