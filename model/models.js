@@ -60,5 +60,5 @@ Article.Category = Article.belongsTo(Category, {
 	onUpdate: "CASCADE",
 	onDelete: "CASCADE"
 });
-		
-module.exports = { db, Article, Category };
+
+module.exports = { Article, Category };

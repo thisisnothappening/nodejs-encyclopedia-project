@@ -1,5 +1,5 @@
-const { db, Article, Category } = require("../model/models.js");
-// const db = require("./database");
+const { Article, Category } = require("../model/models.js");
+const db = require("./database");
 const fsPromises = require('fs').promises;
 const NullFieldError = require("../error/NullFieldError");
 const path = require("path");
