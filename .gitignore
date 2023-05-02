@@ -1,5 +1,6 @@
 node_modules
-logs
+error.log
+request.log
 build
 .env
 .env.development
