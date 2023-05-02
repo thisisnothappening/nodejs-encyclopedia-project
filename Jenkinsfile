@@ -3,6 +3,7 @@ pipeline {
 		node {
 			image "node:alpine"
 			label "encyclopedia-project-agent"
+		}
 	}
 	triggers {
         pollSCM '* * * * *'
