@@ -1,10 +1,5 @@
 pipeline {
-	agent {
-		docker {
-			image "node:alpine"
-			label "encyclopedia-project-agent"
-		}
-	}
+	agent any
 	triggers {
         pollSCM '* * * * *'
     }
@@ -31,7 +26,7 @@ pipeline {
 				sh "ssh -i '.ssh/amazon_linux_vm_key.pem' ec2-user@ec2-16-16-124-101.eu-north-1.compute.amazonaws.com"
 				sh "sudo -s"
 				sh "cd ~"
-				
+
 				sh "docker-compose up"
 			}
 		}
