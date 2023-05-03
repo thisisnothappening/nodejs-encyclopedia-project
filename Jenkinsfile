@@ -28,13 +28,15 @@ pipeline {
 				// sh "docker tag nodejs-encyclopedia-project:alpine-cors-prod-latest thisisnothappening/nodejs-encyclopedia-project:alpine-cors-prod-latest"
 				// sh "docker push thisisnothappening/nodejs-encyclopedia-project:alpine-cors-prod-latest"
 
-				sshagent(credentials: ['amazon-linux-vm-key']) {
-                    sh "ssh -o StrictHostKeyChecking=no -i ~/.ssh/amazon_linux_vm_key.pem ec2-user@ec2-16-16-124-101.eu-north-1.compute.amazonaws.com; \
-					sudo -s; \
-					cd ~; \
-					mkdir test \
-					"
-                }
+				withCredentials([sshUserPrivateKey(credentialsId: 'amazon-linux-vm-key', keyFileVariable: 'KEYFILE')]) {
+					sshagent(credentials: ['amazon-linux-vm-key']) {
+                    	sh "ssh -o StrictHostKeyChecking=no -i $KEYFILE ec2-user@ec2-16-16-124-101.eu-north-1.compute.amazonaws.com; \
+						sudo -s; \
+						cd ~; \
+						mkdir test \
+						"
+                	}
+				}
 			}
 		}
 	}
