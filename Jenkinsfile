@@ -1,8 +1,10 @@
 pipeline {
 	agent {
 		label "encyclopedia-project-agent"
-		always true
 	}
+	options {
+        reuseNode true
+    }
 	triggers {
         pollSCM '* * * * *'
     }
