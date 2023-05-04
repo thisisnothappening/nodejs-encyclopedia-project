@@ -1,6 +1,6 @@
 pipeline {
 	agent {
-		docker {
+		agent {
 			label "encyclopedia-project-agent"
 		}
 	}
