@@ -1,8 +1,8 @@
 pipeline {
 	agent {
-		dockerfile {
-			filename "Dockerfile.agent"
-			label "encyclopedia-dockerfile-agent"
+		docker {
+			image "thisisnothappening/jenkins-agent:node"
+			label "encyclopedia-project-agent"
 		}
 	}
 	triggers {
