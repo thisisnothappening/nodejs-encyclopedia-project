@@ -32,10 +32,10 @@ pipeline {
 
 				withCredentials([sshUserPrivateKey(credentialsId: 'amazon-linux-vm-key', keyFileVariable: 'KEYFILE')]) {
 					sshagent(credentials: ['amazon-linux-vm-key']) {
-                    	sh "ssh -o StrictHostKeyChecking=no -i $KEYFILE ec2-user@ec2-13-48-137-72.eu-north-1.compute.amazonaws.com; \
-						cd ~; \
+                    	sh "ssh -o StrictHostKeyChecking=no -i $KEYFILE ec2-user@ec2-13-48-137-72.eu-north-1.compute.amazonaws.com ' \
+						cd ~ && \
 						mkdir test \
-						"
+						'"
                 	}
 				}
 			}
