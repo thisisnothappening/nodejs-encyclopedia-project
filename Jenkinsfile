@@ -1,10 +1,10 @@
 pipeline {
 	agent {
-		label "encyclopedia-project-agent"
+		dockerfile {
+			filename "Dockerfile.agent"
+			label "encyclopedia-dockerfile-agent"
+		}
 	}
-	options {
-        reuseNode true
-    }
 	triggers {
         pollSCM '* * * * *'
     }

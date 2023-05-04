@@ -1,0 +1,7 @@
+FROM jenkins/agent:alpine-jdk11
+
+USER root
+
+RUN apk add --no-cache nodejs npm
+
+USER jenkins
