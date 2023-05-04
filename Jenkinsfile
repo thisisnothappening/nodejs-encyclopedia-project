@@ -1,7 +1,7 @@
 pipeline {
 	agent {
 		label "encyclopedia-project-agent"
-		retain true
+		always true
 	}
 	triggers {
         pollSCM '* * * * *'
