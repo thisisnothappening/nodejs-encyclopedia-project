@@ -2,7 +2,6 @@ pipeline {
 	agent {
 		node {
 			label "encyclopedia-project-agent"
-			retain true
 		}
 	}
 	triggers {
