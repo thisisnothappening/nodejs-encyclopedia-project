@@ -1,7 +1,6 @@
 pipeline {
 	agent {
 		docker {
-			image "thisisnothappening/jenkins-agent:node"
 			label "encyclopedia-project-agent"
 		}
 	}
