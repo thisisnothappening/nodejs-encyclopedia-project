@@ -3,7 +3,7 @@ const path = require('path');
 
 const logRequest = (message) => {
 	let logMessage = `${new Date().toUTCString()} - ${message}\n`;
-	const logsDir = path.join(__dirname, 'logs');
+	const logsDir = path.join(__dirname, "..", 'logs');
 
 	if (!fs.existsSync(logsDir)) {
 		fs.mkdirSync(logsDir);
