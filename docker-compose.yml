@@ -1,8 +1,10 @@
 version: "3.9"
 
 services:
-  encyclopedia:
-    image: thisisnothappening/nodejs-encyclopedia-project:alpine-cors-dev-latest
+  backend:
+    image: thisisnothappening/nodejs-encyclopedia-project:cors-dev
+    pull_policy: always
+    restart: on-failure
     ports:
       - "8080:8080"
     env_file:
@@ -10,6 +12,40 @@ services:
       - .env.development
     networks:
       - encyclopedia-network
+    depends_on:
+      - mysql  
+    # deploy:
+    #   mode: replicated
+    #   replicas: 3
+
+  frontend:
+    image: thisisnothappening/reactjs-encyclopedia-project:notpacked
+    pull_policy: always
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_HOST_NAME=http://localhost:8080
+    networks:
+      - encyclopedia-network
+    depends_on:
+      - backend
+
+  mysql:
+    image: mysql:latest
+    restart: on-failure
+    volumes:
+      - mysql-volume-1:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    networks:
+      - encyclopedia-network
+
+volumes:
+  mysql-volume-1:
+    external: true
 
 networks:
   encyclopedia-network:

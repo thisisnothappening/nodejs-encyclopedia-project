@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  jenkins:
+    image: jenkins/jenkins:latest
+    restart: on-failure
+    ports:
+      - "7070:8080"
+      - "50000:50000"
+    volumes:
+      - "jenkins-data:/var/jenkins_home"
+      - "jenkins-docker-certs:/certs/client:ro"
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: "1"
+    networks:
+      - jenkins
+  
+  socat:
+    image: alpine/socat
+    command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
+    restart: always
+    ports:
+      - "127.0.0.1:2376:2375"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - jenkins
+
+volumes:
+  jenkins-data:
+    external: true
+  jenkins-docker-certs:
+    external: true
+
+networks:
+  jenkins:
+    external: true
