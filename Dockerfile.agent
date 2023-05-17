@@ -2,6 +2,6 @@ FROM jenkins/agent:alpine-jdk11
 
 USER root
 
-RUN apk add --no-cache nodejs npm
+RUN apk update
 
-USER jenkins
+RUN apk add --no-cache nodejs npm docker-cli
