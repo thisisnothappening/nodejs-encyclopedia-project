@@ -16,7 +16,7 @@ const Article = db.define("article", {
 		type: Sequelize.INTEGER,
 		allowNull: false,
 		references: {
-			model: "category", // not sure about this
+			model: "category", 
 			key: "id"
 		},
 	},
@@ -52,10 +52,10 @@ const Category = db.define("category", {
 	underscored: true,
 });
 
-Category.Article = Category.hasMany(Article, {
-	foreignKey: "categoryId" // not sure about this
+Category.hasMany(Article, {
+	foreignKey: "categoryId"
 });
-Article.Category = Article.belongsTo(Category, {
+Article.belongsTo(Category, {
 	foreignKey: "categoryId",
 	onUpdate: "CASCADE",
 	onDelete: "CASCADE"
