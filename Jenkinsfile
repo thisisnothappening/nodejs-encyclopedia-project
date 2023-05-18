@@ -9,11 +9,6 @@ pipeline {
 		pollSCM "* * * * *"
 	}
 	stages {
-	    stage("Checkout") {
-	        steps {
-	           git branch: 'main', url: 'https://github.com/thisisnothappening/nodejs-encyclopedia-project'
-	        }
-	    }
 		stage("Build") {
 			steps {
 				sh "npm install"
