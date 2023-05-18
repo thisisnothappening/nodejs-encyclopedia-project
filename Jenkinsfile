@@ -4,6 +4,10 @@ pipeline {
 			label "encyclopedia-project-agent"
 		}
 	}
+	triggers {
+		// this means once per minute. Change it later to once per 5 mins, or more
+		pollSCM "* * * * *"
+	}
 	stages {
 	    stage("Checkout") {
 	        steps {
