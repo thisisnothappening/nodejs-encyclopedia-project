@@ -24,10 +24,10 @@ pipeline {
 			    withCredentials([
 			        string(credentialsId: 'docker-login-password', variable: 'DOCKER_PASSWORD')
 			        ]) {
-			        sh "docker build -t nodejs-encyclopedia-project:cors-dev -f Dockerfile.dev ."
-			        sh "docker tag nodejs-encyclopedia-project:cors-dev thisisnothappening/nodejs-encyclopedia-project:cors-dev"
+			        sh "docker build -t nodejs-encyclopedia-project:cors -f Dockerfile.start ."
+			        sh "docker tag nodejs-encyclopedia-project:cors thisisnothappening/nodejs-encyclopedia-project:cors"
 			        sh 'docker login --username thisisnothappening --password $DOCKER_PASSWORD'
-			        sh "docker push thisisnothappening/nodejs-encyclopedia-project:cors-dev"
+			        sh "docker push thisisnothappening/nodejs-encyclopedia-project:cors"
 			        sh "docker image prune -a -f"
 			    }
 			}

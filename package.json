@@ -1,14 +1,12 @@
 {
   "name": "nodejs-encyclopedia-project",
   "version": "1.0.0",
-  "description": "This is the back-end for my encyclopedia project.",
+  "description": "This is the backend for my encyclopedia project.",
   "main": "server.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "prod": "cross-env NODE_ENV=production node server.js",
-    "reset": "cross-env NODE_ENV=development node config/articleReader.js",
-	"test": "cross-env NODE_ENV=development jest",
-	"stage": "cross-env NODE_ENV=production jest"
+    "start": "nodemon server.js",
+	"reset": "node config/articleReader.js",
+    "test": "jest"
   },
   "author": "Negoiu Paul | thisisnothappening",
   "license": "ISC",
@@ -28,7 +26,6 @@
     "serve": "^14.2.0"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "jest": "^29.4.0"
   }
 }

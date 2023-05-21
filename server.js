@@ -38,7 +38,3 @@ app.get('*', function (req, res) {
 const port = process.env.PORT || 8080;
 const host = "0.0.0.0";
 app.listen(port, host, () => console.log(`Listening on port ${port}...`));
-
-setTimeout(() => {
-	console.log(`\n\t--- Environment:   ${process.env.NODE_ENV} ---\n`);
-}, 1000);

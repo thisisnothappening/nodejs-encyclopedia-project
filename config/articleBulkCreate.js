@@ -1,8 +1,8 @@
-const { db, Article, Category } = require("../model/models.js");
-// const db = require("./database.js");
+const { Article, Category } = require("../model/models.js");
+const db = require("./database.js");
 
 const reset = async () => {
-	await db.sync({ force: true }) // this function truncates the tables
+	await db.sync({ force: true, match: /_test$/ }) // this function truncates the tables
 		.catch(err => console.log(err));
 
 	await Category.bulkCreate([
