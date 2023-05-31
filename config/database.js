@@ -7,12 +7,22 @@ const db = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.D
 	dialect: process.env.DB_DIALECT,
 });
 
-db.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`)
-	.catch(err => console.error(err));
-
 const isTestEnv = process.env.DB_NAME.endsWith("_test");
 
-db.sync({ alter: isTestEnv ? true : false })
-	.catch(err => console.error(err));
+const connect = () => {
+	return db
+		.authenticate()
+		.then(() => {
+			console.log("Database connected...");
+			return db.sync({ alter: isTestEnv ? true : false });
+		})
+		.catch((err) => {
+			console.error("Error: " + err);
+			console.log("Retrying in 3 seconds...");
+			setTimeout(connect, 3000);
+		});
+};
+
+connect();
 
 module.exports = db;

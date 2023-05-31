@@ -1,15 +1,11 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const db = require("./config/database.js");
 const errorHandler = require("./middleware/errorHandler.js");
 const cookieParser = require('cookie-parser');
 const path = require("path");
 require("dotenv").config();
-
-db.authenticate()
-	.then(() => console.log("Database connected..."))
-	.catch(err => console.error("Error: " + err));
+require("./config/database.js");
 
 app.use(cookieParser());
 app.use(express.json());
