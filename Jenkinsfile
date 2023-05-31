@@ -28,14 +28,14 @@ pipeline {
 			        sh "docker tag nodejs-encyclopedia-project:cors thisisnothappening/nodejs-encyclopedia-project:cors"
 			        sh 'docker login --username thisisnothappening --password $DOCKER_PASSWORD'
 			        sh "docker push thisisnothappening/nodejs-encyclopedia-project:cors"
-			        sh "docker image prune -a -f"
+			        sh "docker image prune -f"
 			    }
 			}
 		}
 		stage("Deploy") {
 		    steps{
 		        withCredentials([
-					sshUserPrivateKey(credentialsId: 'amazon-linux-vm-key', keyFileVariable: 'KEYFILE'),
+					sshUserPrivateKey(credentialsId: 'aws-vm-key', keyFileVariable: 'KEYFILE'),
 					string(credentialsId: 'ec2-ssh-user-and-dns', variable: 'TOKEN')
 					]) {
                     sh '''
