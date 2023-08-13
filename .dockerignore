@@ -32,3 +32,5 @@ README.md
 **/notes.txt
 **/.terraform*
 **/terraform.*
+**/docker-up.sh
+**/Jenkinsfile*
