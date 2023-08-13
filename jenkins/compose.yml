@@ -3,9 +3,9 @@ version: '3.9'
 services:
   jenkins:
     image: jenkins/jenkins:latest
-    restart: on-failure
+    restart: always
     ports:
-      - "7070:8080"
+      - "8080:8080"
       - "50000:50000"
     volumes:
       - "jenkins-data:/var/jenkins_home"
@@ -18,7 +18,7 @@ services:
       - jenkins
   
   socat:
-    image: alpine/socat
+    image: alpine/socat:latest
     command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
     restart: always
     ports:
@@ -26,6 +26,8 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
+      - jenkins
+    depends_on:
       - jenkins
 
 volumes:
