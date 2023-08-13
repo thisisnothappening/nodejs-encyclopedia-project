@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   jenkins:
-    image: jenkins/jenkins:latest
+    image: jenkins/jenkins:lts
     restart: always
     ports:
       - "8080:8080"
@@ -16,7 +16,7 @@ services:
       DOCKER_TLS_VERIFY: "1"
     networks:
       - jenkins
-  
+
   socat:
     image: alpine/socat:latest
     command: tcp-listen:2375,fork,reuseaddr unix-connect:/var/run/docker.sock
@@ -26,8 +26,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     networks:
-      - jenkins
-    depends_on:
       - jenkins
 
 volumes:
