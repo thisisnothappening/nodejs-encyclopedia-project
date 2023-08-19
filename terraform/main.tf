@@ -21,6 +21,13 @@ resource "aws_security_group" "my_security_group" {
 	cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+	from_port 	= 8080
+	to_port 	= 8080
+	protocol 	= "tcp"
+	cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
   	from_port   = 0
   	to_port     = 0
@@ -30,9 +37,9 @@ resource "aws_security_group" "my_security_group" {
 }
 
 resource "aws_instance" "encyclopedia_docker" {
-  ami             = "ami-0a79730daaf45078a"
+  ami             = "ami-0989fb15ce71ba39e" // Ubuntu
   instance_type   = "t3.micro"
-  key_name        = "amazon_linux_vm_key"
+  key_name        = "aws_vm_key"
   security_groups = [aws_security_group.my_security_group.name]
   tags = {
 	Name = "Welcomepedia in Docker"
@@ -50,13 +57,10 @@ resource "aws_instance" "encyclopedia_docker" {
 	sudo mkswap /swapfile
 	sudo swapon /swapfile
 	sudo sh -c 'echo "/swapfile swap swap defaults 0 0" >> /etc/fstab'
-	sudo yum update -y
-	sudo yum install -y docker
+	sudo apt update -y
+	sudo apt install -y docker.io
 	sudo service docker start
-	sudo chmod 666 /var/run/docker.sock
-	sudo docker network create encyclopedia-network
-	sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-	sudo chmod +x /usr/local/bin/docker-compose
+	sudo apt install -y docker-compose
   EOF
 }
 
