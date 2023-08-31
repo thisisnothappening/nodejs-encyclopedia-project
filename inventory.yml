@@ -1,0 +1,11 @@
+---
+webservers:
+  hosts:
+    ec2-13-49-240-62.eu-north-1.compute.amazonaws.com:
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ~/.ssh/aws_vm_key.pem
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    ec2-13-53-40-0.eu-north-1.compute.amazonaws.com:
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: ~/.ssh/aws_vm_key.pem
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'

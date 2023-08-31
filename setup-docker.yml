@@ -1,0 +1,56 @@
+---
+- name: Configure system and install Docker
+  hosts: webservers
+  become: true
+  tasks:
+    - name: Create swapfile
+      command: fallocate -l 2G /swapfile
+      changed_when: false
+
+    - name: Set permissions on swapfile
+      file:
+        path: /swapfile
+        mode: '0600'
+
+    - name: Create swap space
+      command: mkswap /swapfile
+      changed_when: false
+
+    - name: Enable swap
+      command: swapon /swapfile
+      changed_when: false
+
+    - name: Add swap entry to /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "/swapfile swap swap defaults 0 0"
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+    - name: Add user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Create Docker network
+      command: docker network create encyclopedia-network
+      changed_when: false
+      # ignore_errors: true
