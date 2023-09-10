@@ -120,14 +120,3 @@ Open a terminal, and run `aws configure`, then type your access keys in the prom
 If you want to delete everything, just run `terraform destroy`, which will also delete your EC2 instance.
 8. In your terminal, ssh into the EC2 instance that you created, and then just follow the instructions
 from the "Docker Run" title, but you don't need to install Docker, since it's already installed by main.tf.
-
-
-
-
-
-
-
-
-
-
-
