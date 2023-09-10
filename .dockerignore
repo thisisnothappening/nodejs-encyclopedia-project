@@ -34,3 +34,5 @@ README.md
 **/terraform.*
 **/docker-up.sh
 **/Jenkinsfile*
+**/inventory.yml
+**/setup-docker.yml
