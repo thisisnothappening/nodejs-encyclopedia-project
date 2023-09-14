@@ -31,6 +31,7 @@ pipeline {
 			steps {
 				script {
 					version = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
+					version = 'test'
 					def exists = {
 						def result = sh(script: "curl --silent -f --head -lL https://hub.docker.com/v2/repositories/${DOCKER_REGISTRY}/${DOCKER_IMAGE}/tags/${version}/", returnStatus: true)
 						return result == 0
