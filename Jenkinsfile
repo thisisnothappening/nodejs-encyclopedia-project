@@ -67,8 +67,7 @@ pipeline {
                         cd .server &&
                         sudo docker-compose stop backend &&
                         sudo docker container prune -f &&
-                        sudo docker-compose up -d &&
-                        sudo docker image prune -f
+                        sudo docker-compose up -d
                         '
                     '''
 				}
