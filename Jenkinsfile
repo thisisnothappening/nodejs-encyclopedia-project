@@ -36,9 +36,9 @@ pipeline {
 						def result = sh(script: "curl --silent -f --head -lL https://hub.docker.com/v2/repositories/${DOCKER_REGISTRY}/${DOCKER_IMAGE}/tags/${version}/", returnStatus: true)
 						return result == 0
 					}
-					if (exists()) {
-						error("An image with the tag '${version}' already exists. Please run `npm version [major/minor/patch]`, then commit and push to GitHub.")
-					}
+					// if (exists()) {
+					// 	error("An image with the tag '${version}' already exists. Please run `npm version [major/minor/patch]`, then commit and push to GitHub.")
+					// }
 					withCredentials([
 						string(credentialsId: 'docker-login-password', variable: 'DOCKER_PASSWORD')
 						]) {
@@ -48,7 +48,7 @@ pipeline {
 						sh 'docker login --username $DOCKER_REGISTRY --password $DOCKER_PASSWORD'
 						sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest"
 						sh "docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${version}"
-						sh "docker image prune -f" // Problem here. Check OneNote
+						sh "docker image prune -f"
 					}
 				}
 			}
