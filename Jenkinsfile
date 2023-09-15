@@ -31,14 +31,13 @@ pipeline {
 			steps {
 				script {
 					version = sh(script: "node -p \"require('./package.json').version\"", returnStdout: true).trim()
-					version = 'test'
 					def exists = {
 						def result = sh(script: "curl --silent -f --head -lL https://hub.docker.com/v2/repositories/${DOCKER_REGISTRY}/${DOCKER_IMAGE}/tags/${version}/", returnStatus: true)
 						return result == 0
 					}
-					// if (exists()) {
-					// 	error("An image with the tag '${version}' already exists. Please run `npm version [major/minor/patch]`, then commit and push to GitHub.")
-					// }
+					if (exists()) {
+						error("An image with the tag '${version}' already exists. Please run `npm version [major/minor/patch]`, then commit and push to GitHub.")
+					}
 					withCredentials([
 						string(credentialsId: 'docker-login-password', variable: 'DOCKER_PASSWORD')
 						]) {
@@ -67,7 +66,8 @@ pipeline {
                         cd .server &&
                         sudo docker-compose stop backend &&
                         sudo docker container prune -f &&
-                        sudo docker-compose up -d
+                        sudo docker-compose up -d &&
+                        sudo docker image prune -f
                         '
                     '''
 				}
